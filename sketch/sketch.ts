@@ -2,7 +2,9 @@ let table: p5.Table;
 let author = "Alex T. Pang";
 let authorPapers: Paper[];
 var allAuthors;
-var numberOfPertinentPublications;
+var authorPertinentPapers;
+var keywords = ['flow', 'systems', 'data'];
+let allAuthorsPertinentPapers : any[];
 
 function preload() {
     table = loadTable('data/IEEE VIS papers 1990-2018 - Main dataset.csv', 'csv', 'header');
@@ -11,23 +13,47 @@ function preload() {
 function setup() {
     allAuthors = getUniqueAuthors();
     authorPapers = getAuthorPapers(author, table);
-    numberOfPertinentPublications = getnumberOfPertinentPapersOfAuthor (authorPapers, "flow");
-    console.log("Distinct papers count for Alex: "+authorPapers.length);
-    console.log("Distinct Authors count: "+allAuthors.length);
-    console.log("number of pertinent papers "+numberOfPertinentPublications);
+    authorPertinentPapers = getPertinentPapersOfAuthor (authorPapers, keywords);
+    console.log("number of pertinent papers "+authorPertinentPapers.length);
+    console.log("alex's score "+getAuthorScore(authorPertinentPapers));
 }
 
-function getnumberOfPertinentPapersOfAuthor(papers : Paper[], keyword : string) {
-    let count = 0;
-    for (let index = 0; index < papers.length; index++) {
-        if (papers[index].title.indexOf(keyword)>=0){ //TODO should be papers[index].abstract
-            count +=1;
+function getAuthorOpacity(){
+
+}
+
+//TODO the code only deal with top 100 pertinent authors
+function getTopAuthorsScores(allAuthors : any[]){
+    let scores = [];
+    for (let index = 0; index < allAuthors.length; index++) {
+        let pertinentPapers = getPertinentPapersOfAuthor(allAuthors[index], keywords);
+        scores.push(getAuthorScore(pertinentPapers));
+    }
+    return scores.sort((a, b) => a - b);
+    return scores;
+}
+
+//papers are already sorted
+function getAuthorScore(pertinentPapers : Paper[]){
+    let experienceYears = pertinentPapers[pertinentPapers.length-1].year - pertinentPapers[0].year ;
+    let inActivityYears = 2019 - pertinentPapers[pertinentPapers.length-1].year;
+    let score = experienceYears - inActivityYears;
+    return score;
+}
+
+//count number of papers of an author which contain a keyword in its abstract
+function getPertinentPapersOfAuthor(authorPapers : Paper[], keywords : string[]) {
+    let pertinentPapers = [];
+    for (let index = 0; index < authorPapers.length; index++) {
+        for(let i =0;i < keywords.length; i++) {
+            if (authorPapers[index].title.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
+                pertinentPapers.push(authorPapers[index]);
+            }
         }
     }
-    return count;
+    return pertinentPapers;
 }
 
-//trouver la liste des auteurs
 function getUniqueAuthors(){
     let authorsRows =  table.getColumn("AuthorNames-Deduped");
     allAuthors = Array<any>();
@@ -38,9 +64,10 @@ function getUniqueAuthors(){
             if (allAuthors.indexOf(elSplit[a]) <0) allAuthors.push(elSplit[a]);
         }
     }
+
     return allAuthors;
 }
-//trouver la liste des publications d'un auteur
+
 function getAuthorPapers(author: string, table: p5.Table): Paper[] {
     var papers = Array<Paper>();
     for (let i = 0; i < table.getRowCount(); i++) {
