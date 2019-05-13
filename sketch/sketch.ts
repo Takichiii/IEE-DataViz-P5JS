@@ -1,24 +1,17 @@
 let table: p5.Table;
-let author = "Alex T. Pang";
-let authorPapers: Paper[];
 var allAuthors;
-var authorPertinentPapers;
 var keywords = ['flow', 'systems', 'data'];
-let allAuthorsPertinentPapers : any[];
 
 function preload() {
     table = loadTable("data/IEEE VIS papers 1990-2018 - Main dataset.csv", 'csv', 'header');
 }
 function setup(){
-    barCharts(keywords, 50);
-    /*
-    const input = document.querySelector('input[type="search"]');
+    var input = document.getElementById("search");
     input.addEventListener('search', () => {
-        keywords = split(input.toString(), " ");
+        keywords = split(input.value, " ");
         barCharts(keywords, 50);
-    })*/
+    })
 }
-
 function barCharts(keywords : string[], N : number) {
     let allAuthors = getUniqueAuthors();
     var data = getTopAuthorsScores(allAuthors, N, keywords);
@@ -49,7 +42,7 @@ function barCharts(keywords : string[], N : number) {
 
         fill('#000');
         text(data[i][0], 5, barWidth/2 + 5); // write data
-        text(data[i][1], 200, barWidth/2 + 5); // write data
+        text(data[i][1], 145+parseInt(data[i][1]), barWidth/2 + 5); // write data
 
         pop();
     }
@@ -83,16 +76,22 @@ function getAuthorScore(pertinentPapers : Paper[]){
 function getPertinentPapersOfAuthor(authorPapers : Paper[], keywords : string[]) {
     let pertinentPapers = [];
     for (let index = 0; index < authorPapers.length; index++) {
+        let pertinent = false;
         for(let i =0;i < keywords.length; i++) {
             if (authorPapers[index].keywords.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
-                pertinentPapers.push(authorPapers[index]);
+                pertinent = true;
             }
             else if (authorPapers[index].title.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
-                pertinentPapers.push(authorPapers[index]);
+                pertinent = true;
             }
             else if (authorPapers[index].abstract.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
-                pertinentPapers.push(authorPapers[index]);
+                pertinent = true;
+            } else {
+                pertinent = false;
             }
+        }
+        if (pertinent = true){
+            pertinentPapers.push(authorPapers[index]);
         }
     }
     return pertinentPapers;
@@ -134,4 +133,5 @@ function getAuthorPapers(author: string, table: p5.Table): Paper[] {
     }
     return papers.sort((a, b) => a.year - b.year);
 }
+
 
