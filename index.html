@@ -58,12 +58,11 @@
 </html>
 
 <script>
-    console.log('hi');
     const input = document.querySelector('input[type="search"]');
     input.addEventListener('keypress', (event) => {
         if (event.keyCode === 13) {
-            console.log('help?');
-            keywords = split(input.value, " ");
+            keyword = input.value;
+            keywords = keyword.split(" ");
             console.log(keywords);
             barCharts(keywords, 50);
         }
