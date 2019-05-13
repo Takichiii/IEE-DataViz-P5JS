@@ -8,7 +8,8 @@ Open `index.html`
 Supporting Peer-Review (module : Graphisme & Visualisation)
 
 #### Author
-SBAYTTI Jihane (Polytech Paris-Sud)
+SBAYTTI Jihane
+NGUYEN Pascal
 
 #### Technologies
 `Typescript`
