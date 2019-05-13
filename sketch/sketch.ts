@@ -10,11 +10,13 @@ function preload() {
     table = loadTable("data/IEEE VIS papers 1990-2018 - Main dataset.csv", 'csv', 'header');
 }
 function setup(){
+    barCharts(keywords, 50);
+    /*
     const input = document.querySelector('input[type="search"]');
     input.addEventListener('search', () => {
         keywords = split(input.toString(), " ");
         barCharts(keywords, 50);
-    })
+    })*/
 }
 
 function barCharts(keywords : string[], N : number) {
