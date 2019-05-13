@@ -28,6 +28,10 @@ function preload() {
     table = loadTable("data/IEEE VIS papers 1990-2018 - Main dataset.csv", 'csv', 'header');
 }
 function setup() {
+<<<<<<< HEAD
+=======
+    barCharts(keywords, 50);
+>>>>>>> 7fd6e8415c7fa76133269219470a02009b1d898d
 }
 function barCharts(keywords, N) {
     let allAuthors = getUniqueAuthors();
