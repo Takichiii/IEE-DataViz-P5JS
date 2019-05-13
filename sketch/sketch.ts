@@ -39,7 +39,7 @@ function setup() {
 
         fill('#000');
         text(data[i][0], 5, barWidth/2 + 5); // write data
-        text(data[i][1], 5, barWidth/2 + 20); // write data
+        text(data[i][1], 200+barWidth, barWidth/2 + 5); // write data
 
         pop();
     }
