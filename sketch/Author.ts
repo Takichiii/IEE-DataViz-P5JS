@@ -5,9 +5,8 @@ class Author {
     pertinentPapers: Paper[];
     score : number;
 
-    constructor(name: string, citations: number) {
+    constructor(name: string) {
         this.name = name;
-        this.citations = citations;
         this.papers = new Array<Paper>();
     }
 

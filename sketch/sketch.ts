@@ -12,33 +12,65 @@ function preload() {
 
 function setup() {
     allAuthors = getUniqueAuthors();
-    authorPapers = getAuthorPapers(author, table);
-    authorPertinentPapers = getPertinentPapersOfAuthor (authorPapers, keywords);
-    console.log("number of pertinent papers "+authorPertinentPapers.length);
-    console.log("alex's score "+getAuthorScore(authorPertinentPapers));
+    var data = getTopAuthorsScores(allAuthors, 50);
+
+    var width = 200, // canvas width and height
+        height = 1500,
+        margin = 20,
+        w = width - 2 * margin, // chart area width and height
+        h = height - 2 * margin;
+
+    var barWidth =  (h / data.length) * 0.3; // width of bar
+    var barMargin = (h / data.length) * 0.2; // margin between two bars
+
+    createCanvas(width, height);
+
+    textSize(10);
+
+    push();
+    translate(margin, margin); // ignore margin area
+
+    for(var i=0; i<data.length; i++) {
+        push();
+        fill(0,80, 0,(data[i][2]*255)/data[0][2]);
+        noStroke();
+        translate(0, i* (barWidth + barMargin)); // jump to the top right corner of the bar
+        rect(140, 0, data[i][1], barWidth); // draw rect
+
+        fill('#000');
+        text(data[i][0], 5, barWidth/2 + 5); // write data
+        text(data[i][1], 5, barWidth/2 + 20); // write data
+
+        pop();
+    }
+
+    pop();
 }
 
 function getAuthorOpacity(){
 
 }
 
-//TODO the code only deal with top 100 pertinent authors
-function getTopAuthorsScores(allAuthors : any[]){
-    let scores = [];
+//top N pertinent authors
+function getTopAuthorsScores(allAuthors : any[],N : number){
+    let top = [];
     for (let index = 0; index < allAuthors.length; index++) {
-        let pertinentPapers = getPertinentPapersOfAuthor(allAuthors[index], keywords);
-        scores.push(getAuthorScore(pertinentPapers));
+        let author = allAuthors[index];
+        let papers = getAuthorPapers(author, table);
+        let pertinentPapers = getPertinentPapersOfAuthor(papers, keywords);
+        top.push([author, pertinentPapers.length, getAuthorScore(pertinentPapers)]);
     }
-    return scores.sort((a, b) => a - b);
-    return scores;
+    top.sort((a, b) => b[1] - a[1]);
+    return top.slice(0,N);
 }
 
 //papers are already sorted
 function getAuthorScore(pertinentPapers : Paper[]){
+    if (pertinentPapers.length == 0)
+        return 0;
     let experienceYears = pertinentPapers[pertinentPapers.length-1].year - pertinentPapers[0].year ;
     let inActivityYears = 2019 - pertinentPapers[pertinentPapers.length-1].year;
-    let score = experienceYears - inActivityYears;
-    return score;
+    return experienceYears - inActivityYears;
 }
 
 //count number of papers of an author which contain a keyword in its abstract
@@ -46,7 +78,13 @@ function getPertinentPapersOfAuthor(authorPapers : Paper[], keywords : string[])
     let pertinentPapers = [];
     for (let index = 0; index < authorPapers.length; index++) {
         for(let i =0;i < keywords.length; i++) {
-            if (authorPapers[index].title.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
+            if (authorPapers[index].keywords.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
+                pertinentPapers.push(authorPapers[index]);
+            }
+            else if (authorPapers[index].title.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
+                pertinentPapers.push(authorPapers[index]);
+            }
+            else if (authorPapers[index].abstract.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
                 pertinentPapers.push(authorPapers[index]);
             }
         }
@@ -79,12 +117,13 @@ function getAuthorPapers(author: string, table: p5.Table): Paper[] {
                 authors.push(author);
             });
             var title = row.get('Title').toString();
+            var keywords = row.get('AuthorKeywords').toString();
             var abstract = row.get('Abstract').toString(); //TODO DONNE NULL, IL FAUT BIEN LES RECUPERER
             var year = parseInt(row.get('Year').toString());
             var authors = authors;
             var affiliation = row.get('AuthorAffiliation').toString();
             var citations = parseInt(row.get('AminerCitationCount_02-2019').toString());
-            papers.push(new Paper(title, abstract, year, authors, affiliation, citations));
+            papers.push(new Paper(title, abstract, keywords, year, authors, affiliation, citations));
         }
     }
     return papers.sort((a, b) => a.year - b.year);

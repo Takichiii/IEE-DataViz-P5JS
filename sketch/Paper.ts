@@ -1,6 +1,7 @@
 class Paper {
     title: string;
     abstract: string;
+    keywords: string;
     year: number;
     authors: string[];
     affiliation: string;
@@ -14,6 +15,7 @@ class Paper {
     constructor(
         title: string,
         abstract: string,
+        keywords: string,
         year: number,
         authors: string[],
         affiliation: string,
@@ -21,6 +23,7 @@ class Paper {
 
         this.title = title;
         this.abstract = abstract;
+        this.keywords = keywords;
         this.year = year;
         this.authors = authors;
         this.affiliation = affiliation;
