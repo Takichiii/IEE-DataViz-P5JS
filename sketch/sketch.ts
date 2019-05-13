@@ -4,20 +4,15 @@ let authorPapers: Paper[];
 var allAuthors;
 var authorPertinentPapers;
 var keywords = ['flow', 'systems', 'data'];
-let allAuthorsPertinentPapers : any[];
+let allAuthorsPertinentPapers: any[];
 
 function preload() {
     table = loadTable("data/IEEE VIS papers 1990-2018 - Main dataset.csv", 'csv', 'header');
 }
-function setup(){
-    const input = document.querySelector('input[type="search"]');
-    input.addEventListener('search', () => {
-        keywords = split(input.toString(), " ");
-        barCharts(keywords, 50);
-    })
+function setup() {
 }
 
-function barCharts(keywords : string[], N : number) {
+function barCharts(keywords: string[], N: number) {
     let allAuthors = getUniqueAuthors();
     var data = getTopAuthorsScores(allAuthors, N, keywords);
 
@@ -28,7 +23,7 @@ function barCharts(keywords : string[], N : number) {
         //h = height - 2 * margin;
         h = height - 2 * margin;
 
-    var barWidth =  (h / data.length) * 0.3; // width of bar
+    var barWidth = (h / data.length) * 0.3; // width of bar
     var barMargin = (h / data.length) * 0.2; // margin between two bars
 
     createCanvas(width, height);
@@ -38,16 +33,16 @@ function barCharts(keywords : string[], N : number) {
     push();
     translate(margin, margin); // ignore margin area
 
-    for(var i=0; i<data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
         push();
-        fill(0,80, 0,(data[i][2]*255)/data[0][2]);
+        fill(0, 80, 0, (data[i][2] * 255) / data[0][2]);
         //noStroke();
-        translate(0, i* (barWidth + barMargin)); // jump to the top right corner of the bar
+        translate(0, i * (barWidth + barMargin)); // jump to the top right corner of the bar
         rect(140, 0, data[i][1], barWidth); // draw rect
 
         fill('#000');
-        text(data[i][0], 5, barWidth/2 + 5); // write data
-        text(data[i][1], 200, barWidth/2 + 5); // write data
+        text(data[i][0], 5, barWidth / 2 + 5); // write data
+        text(data[i][1], 200, barWidth / 2 + 5); // write data
 
         pop();
     }
@@ -56,7 +51,7 @@ function barCharts(keywords : string[], N : number) {
 }
 
 //top N pertinent authors
-function getTopAuthorsScores(allAuthors : any[],N : number, keywords : string[]){
+function getTopAuthorsScores(allAuthors: any[], N: number, keywords: string[]) {
     let top = [];
     for (let index = 0; index < allAuthors.length; index++) {
         let author = allAuthors[index];
@@ -65,23 +60,23 @@ function getTopAuthorsScores(allAuthors : any[],N : number, keywords : string[])
         top.push([author, pertinentPapers.length, getAuthorScore(pertinentPapers)]);
     }
     top.sort((a, b) => b[1] - a[1]);
-    return top.slice(0,N);
+    return top.slice(0, N);
 }
 
 //papers are already sorted
-function getAuthorScore(pertinentPapers : Paper[]){
+function getAuthorScore(pertinentPapers: Paper[]) {
     if (pertinentPapers.length == 0)
         return 0;
-    let experienceYears = pertinentPapers[pertinentPapers.length-1].year - pertinentPapers[0].year ;
-    let inActivityYears = 2019 - pertinentPapers[pertinentPapers.length-1].year;
+    let experienceYears = pertinentPapers[pertinentPapers.length - 1].year - pertinentPapers[0].year;
+    let inActivityYears = 2019 - pertinentPapers[pertinentPapers.length - 1].year;
     return experienceYears - inActivityYears;
 }
 
 //count number of papers of an author which contain a keyword in its abstract
-function getPertinentPapersOfAuthor(authorPapers : Paper[], keywords : string[]) {
+function getPertinentPapersOfAuthor(authorPapers: Paper[], keywords: string[]) {
     let pertinentPapers = [];
     for (let index = 0; index < authorPapers.length; index++) {
-        for(let i =0;i < keywords.length; i++) {
+        for (let i = 0; i < keywords.length; i++) {
             if (authorPapers[index].keywords.indexOf(keywords[i]) >= 0) { //TODO should be papers[index].abstract
                 pertinentPapers.push(authorPapers[index]);
             }
@@ -96,14 +91,14 @@ function getPertinentPapersOfAuthor(authorPapers : Paper[], keywords : string[])
     return pertinentPapers;
 }
 
-function getUniqueAuthors(){
-    let authorsRows =  table.getColumn("AuthorNames-Deduped");
+function getUniqueAuthors() {
+    let authorsRows = table.getColumn("AuthorNames-Deduped");
     allAuthors = Array<any>();
     for (let index = 0; index < authorsRows.length; index++) {
         let el = authorsRows[index];
-        let elSplit = split(el,";");
-        for(let a = 0 ; a < elSplit.length; a++ ){
-            if (allAuthors.indexOf(elSplit[a]) <0) allAuthors.push(elSplit[a]);
+        let elSplit = split(el, ";");
+        for (let a = 0; a < elSplit.length; a++) {
+            if (allAuthors.indexOf(elSplit[a]) < 0) allAuthors.push(elSplit[a]);
         }
     }
 
