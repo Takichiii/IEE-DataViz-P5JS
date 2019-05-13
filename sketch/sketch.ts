@@ -9,15 +9,23 @@ let allAuthorsPertinentPapers : any[];
 function preload() {
     table = loadTable('data/IEEE VIS papers 1990-2018 - Main dataset.csv', 'csv', 'header');
 }
+function setup(){
+    const input = document.querySelector('input[type="search"]');
+    input.addEventListener('search', () => {
+        keywords = split(input.value, " ");
+        barCharts(keywords, 50);
+    })
+}
 
-function setup() {
-    allAuthors = getUniqueAuthors();
-    var data = getTopAuthorsScores(allAuthors, 50);
+function barCharts(keywords : string[], N : number) {
+    let allAuthors = getUniqueAuthors();
+    var data = getTopAuthorsScores(allAuthors, N, keywords);
 
-    var width = 200, // canvas width and height
+    var width = 800, // canvas width and height
         height = 1500,
-        margin = 20,
+        margin = 60,
         w = width - 2 * margin, // chart area width and height
+        //h = height - 2 * margin;
         h = height - 2 * margin;
 
     var barWidth =  (h / data.length) * 0.3; // width of bar
@@ -33,13 +41,13 @@ function setup() {
     for(var i=0; i<data.length; i++) {
         push();
         fill(0,80, 0,(data[i][2]*255)/data[0][2]);
-        noStroke();
+        //noStroke();
         translate(0, i* (barWidth + barMargin)); // jump to the top right corner of the bar
         rect(140, 0, data[i][1], barWidth); // draw rect
 
         fill('#000');
         text(data[i][0], 5, barWidth/2 + 5); // write data
-        text(data[i][1], 200+barWidth, barWidth/2 + 5); // write data
+        text(data[i][1], 200, barWidth/2 + 5); // write data
 
         pop();
     }
@@ -47,12 +55,8 @@ function setup() {
     pop();
 }
 
-function getAuthorOpacity(){
-
-}
-
 //top N pertinent authors
-function getTopAuthorsScores(allAuthors : any[],N : number){
+function getTopAuthorsScores(allAuthors : any[],N : number, keywords : string[]){
     let top = [];
     for (let index = 0; index < allAuthors.length; index++) {
         let author = allAuthors[index];
@@ -128,6 +132,4 @@ function getAuthorPapers(author: string, table: p5.Table): Paper[] {
     }
     return papers.sort((a, b) => a.year - b.year);
 }
-
-
 
